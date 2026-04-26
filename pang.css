@@ -1,0 +1,203 @@
+:root {
+  color-scheme: dark;
+  --bg: #101216;
+  --panel: #1b2028;
+  --panel-2: #262d37;
+  --text: #eef3f7;
+  --muted: #9eaab6;
+  --line: #3a4552;
+  --p1: #ffd166;
+  --p2: #66c7ff;
+  --accent: #54d19d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 30% 0%, rgba(84, 209, 157, 0.18), transparent 32rem),
+    linear-gradient(145deg, #101216, #181e27 50%, #0d1015);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button {
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #06120d;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  min-height: 42px;
+  padding: 0 16px;
+}
+
+button + button {
+  background: #dce4ed;
+}
+
+.app {
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+.shell {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 1060px);
+}
+
+.topbar,
+.hud,
+.items {
+  background: rgba(27, 32, 40, 0.94);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.topbar {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 28px;
+  line-height: 1.05;
+}
+
+h2 {
+  font-size: 19px;
+}
+
+p,
+span,
+dt {
+  color: var(--muted);
+}
+
+.stage-box {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  min-width: 96px;
+  padding: 10px;
+  text-align: right;
+}
+
+.stage-box strong {
+  display: block;
+  font-size: 24px;
+}
+
+#game {
+  background: #11151b;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.hud {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 280px 1fr;
+  padding: 12px;
+}
+
+.player,
+.controls {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.player {
+  display: grid;
+  gap: 8px;
+}
+
+.player div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.p1 h2 {
+  color: var(--p1);
+}
+
+.p2 h2 {
+  color: var(--p2);
+}
+
+.controls {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.controls dl {
+  display: grid;
+  gap: 7px;
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.controls div {
+  display: flex;
+  justify-content: space-between;
+}
+
+dd {
+  margin: 0;
+}
+
+.items {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.items strong {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 13px;
+  padding: 7px 10px;
+}
+
+@media (max-width: 760px) {
+  .topbar,
+  .hud {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .stage-box {
+    text-align: left;
+    width: 100%;
+  }
+}

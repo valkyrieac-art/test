@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pang Duel</title>
+    <link rel="stylesheet" href="pang.css">
+  </head>
+  <body>
+    <main class="app">
+      <section class="shell">
+        <header class="topbar">
+          <div>
+            <h1>Pang Duel</h1>
+            <p id="message">Break every bouncing ball. Each player starts with 3 lives.</p>
+          </div>
+          <div class="stage-box">
+            <span>Stage</span>
+            <strong id="stageLabel">1</strong>
+          </div>
+        </header>
+
+        <canvas id="game" width="960" height="540" aria-label="Pang game"></canvas>
+
+        <section class="hud">
+          <article class="player p1">
+            <h2>Player 1</h2>
+            <div><span>Score</span><strong id="p1Score">0</strong></div>
+            <div><span>Lives</span><strong id="p1Lives">3</strong></div>
+            <div><span>Weapon</span><strong id="p1Weapon">Wire</strong></div>
+          </article>
+
+          <article class="controls">
+            <button id="startBtn" type="button">Start</button>
+            <button id="pauseBtn" type="button">Pause</button>
+            <dl>
+              <div><dt>P1</dt><dd>A/D move, W shoot</dd></div>
+              <div><dt>P2</dt><dd>Left/Right move, Up shoot</dd></div>
+            </dl>
+          </article>
+
+          <article class="player p2">
+            <h2>Player 2</h2>
+            <div><span>Score</span><strong id="p2Score">0</strong></div>
+            <div><span>Lives</span><strong id="p2Lives">3</strong></div>
+            <div><span>Weapon</span><strong id="p2Weapon">Wire</strong></div>
+          </article>
+        </section>
+
+        <section class="items">
+          <span>Items</span>
+          <strong>Double Wire</strong>
+          <strong>Power Wire</strong>
+          <strong>Vulcan</strong>
+          <strong>Shield</strong>
+          <strong>Clock</strong>
+          <strong>Dynamite</strong>
+          <strong>1UP</strong>
+          <strong>Bonus</strong>
+        </section>
+      </section>
+    </main>
+
+    <script src="pang.js"></script>
+  </body>
+</html>

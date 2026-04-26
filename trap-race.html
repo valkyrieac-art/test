@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trap Race Duo</title>
+    <link rel="stylesheet" href="trap-race.css">
+  </head>
+  <body>
+    <main class="app">
+      <section class="shell">
+        <header class="topbar">
+          <div>
+            <h1>Trap Race Duo</h1>
+            <p id="message">First player to reach GOAL wins the stage. Switches help, red pads betray.</p>
+          </div>
+          <div class="round-box">
+            <span>Round</span>
+            <strong id="roundLabel">1</strong>
+            <small id="stageLabel">Gate Bridge</small>
+          </div>
+        </header>
+
+        <canvas id="game" width="1120" height="630" aria-label="2 player trap race game"></canvas>
+
+        <section class="hud">
+          <article class="player p1">
+            <h2>Player 1</h2>
+            <div><span>Keys</span><strong>A/D, W x2</strong></div>
+            <div><span>Falls</span><strong id="p1Falls">0</strong></div>
+            <div><span>Items</span><strong id="p1Item">-</strong></div>
+            <div><span>State</span><strong id="p1State">Ready</strong></div>
+          </article>
+
+          <article class="controls">
+            <button id="startBtn" type="button">Start</button>
+            <button id="resetBtn" type="button">Reset</button>
+            <dl>
+              <div><dt>Goal</dt><dd>First to GOAL wins</dd></div>
+              <div><dt>Items</dt><dd>SPD, JMP, SHD, PUSH</dd></div>
+            </dl>
+          </article>
+
+          <article class="player p2">
+            <h2>Player 2</h2>
+            <div><span>Keys</span><strong>Arrows x2</strong></div>
+            <div><span>Falls</span><strong id="p2Falls">0</strong></div>
+            <div><span>Items</span><strong id="p2Item">-</strong></div>
+            <div><span>State</span><strong id="p2State">Ready</strong></div>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <script src="trap-race.js"></script>
+  </body>
+</html>

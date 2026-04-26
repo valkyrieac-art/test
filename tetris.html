@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Two Player Tetris</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app" aria-label="Two player Tetris game">
+      <section class="game-shell">
+        <section class="player-card" aria-label="Player 1">
+          <header>
+            <h2>Player 1</h2>
+            <p id="p1Status">Ready</p>
+          </header>
+          <div class="stage">
+            <canvas id="p1Board" width="300" height="600" aria-label="Player 1 board"></canvas>
+            <div id="p1Overlay" class="overlay hidden">
+              <strong id="p1OverlayTitle">Ready</strong>
+              <span id="p1OverlayHint">Press Start</span>
+            </div>
+          </div>
+          <div class="stats">
+            <div><span>Score</span><strong id="p1Score">0</strong></div>
+            <div><span>Lines</span><strong id="p1Lines">0</strong></div>
+            <div><span>Attack</span><strong id="p1Attack">0</strong></div>
+            <div><span>Speed</span><strong id="p1Speed">1</strong></div>
+            <div><span>Item</span><strong id="p1Item">-</strong></div>
+          </div>
+          <div class="next-wrap">
+            <span>Next</span>
+            <canvas id="p1Next" width="120" height="120" aria-label="Player 1 next piece"></canvas>
+          </div>
+        </section>
+
+        <aside class="panel" aria-label="Game controls">
+          <h1>Tetris Versus</h1>
+          <p id="gameStatus">Ready</p>
+          <div class="mode-panel" aria-label="Match setup">
+            <label>
+              Mode
+              <select id="modeSelect">
+                <option value="cpu">1P vs CPU</option>
+                <option value="human">1P vs 2P</option>
+              </select>
+            </label>
+            <label>
+              CPU
+              <select id="difficultySelect">
+                <option value="easy">Easy</option>
+                <option value="normal" selected>Normal</option>
+                <option value="hard">Hard</option>
+              </select>
+            </label>
+          </div>
+          <div class="buttons">
+            <button id="startBtn" type="button">Start</button>
+            <button id="pauseBtn" type="button">Pause</button>
+          </div>
+          <dl class="keys">
+            <div><dt>P1 Move</dt><dd>A / D</dd></div>
+            <div><dt>P1 Drop</dt><dd>S</dd></div>
+            <div><dt>P1 Rotate</dt><dd>W</dd></div>
+            <div><dt>P1 Item</dt><dd>Q</dd></div>
+            <div><dt>P2 Move</dt><dd>Left / Right</dd></div>
+            <div><dt>P2 Drop</dt><dd>Down</dd></div>
+            <div><dt>P2 Rotate</dt><dd>Up / Space</dd></div>
+            <div><dt>P2 Item</dt><dd>/</dd></div>
+            <div><dt>Pause</dt><dd>P</dd></div>
+          </dl>
+        </aside>
+
+        <section class="player-card" aria-label="Player 2">
+          <header>
+            <h2>Player 2</h2>
+            <p id="p2Status">Ready</p>
+          </header>
+          <div class="stage">
+            <canvas id="p2Board" width="300" height="600" aria-label="Player 2 board"></canvas>
+            <div id="p2Overlay" class="overlay hidden">
+              <strong id="p2OverlayTitle">Ready</strong>
+              <span id="p2OverlayHint">Press Start</span>
+            </div>
+          </div>
+          <div class="stats">
+            <div><span>Score</span><strong id="p2Score">0</strong></div>
+            <div><span>Lines</span><strong id="p2Lines">0</strong></div>
+            <div><span>Attack</span><strong id="p2Attack">0</strong></div>
+            <div><span>Speed</span><strong id="p2Speed">1</strong></div>
+            <div><span>Item</span><strong id="p2Item">-</strong></div>
+          </div>
+          <div class="next-wrap">
+            <span>Next</span>
+            <canvas id="p2Next" width="120" height="120" aria-label="Player 2 next piece"></canvas>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
