@@ -1,0 +1,11 @@
+{
+  "installCommand": "cd youth-future-plus && npm ci",
+  "buildCommand": "cd youth-future-plus && npm run build",
+  "outputDirectory": "youth-future-plus/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
