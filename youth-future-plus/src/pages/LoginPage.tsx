@@ -1,9 +1,9 @@
 import { FormEvent, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { LockKeyhole } from 'lucide-react';
-import { useAuth } from '../contexts/auth';
+import { BrandMark } from '../components/layout/BrandMark';
 import { Button } from '../components/ui/Button';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
+import { useAuth } from '../contexts/auth';
 
 export function LoginPage() {
   const { session, signIn } = useAuth();
@@ -21,7 +21,6 @@ export function LoginPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError('');
-
     setLoading(true);
     try {
       await signIn(loginId, password);
@@ -35,14 +34,8 @@ export function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-50 via-white to-mint-50 px-4 py-8">
       <section className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-soft">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="rounded-lg bg-brand-600 p-3 text-white">
-            <LockKeyhole size={24} />
-          </div>
-          <div>
-            <p className="text-sm font-bold text-brand-700">청소년미래플러스</p>
-            <h1 className="text-xl font-bold text-slate-950">활동관리 시스템</h1>
-          </div>
+        <div className="mb-6 rounded-lg border border-brand-100 bg-gradient-to-br from-brand-50 to-mint-50 p-4">
+          <BrandMark />
         </div>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>

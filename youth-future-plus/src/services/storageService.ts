@@ -2,7 +2,7 @@ import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 const BUCKET = 'attachments';
 
-export async function uploadAttachment(file: File, folder: 'activities' | 'receipts') {
+export async function uploadAttachment(file: File, folder: 'activities' | 'receipts' | 'income-documents') {
   if (!isSupabaseConfigured) {
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();

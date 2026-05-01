@@ -11,12 +11,14 @@ import { PageHeader } from '../components/ui/PageHeader';
 import { StatCard } from '../components/ui/StatCard';
 import { getActiveBudget } from '../services/budgetService';
 import { listExpenses } from '../services/expenseService';
-import type { Budget, Expense } from '../types';
+import { listIncomes } from '../services/incomeService';
+import type { Budget, Expense, Income } from '../types';
 import { formatCurrency, formatDate } from '../utils/format';
-import { getExpenseByCategory, getMonthlyExpenses, getTotalExpense } from '../utils/statistics';
+import { getExpenseByCategory, getMonthlyExpenses, getTotalExpense, getTotalIncome } from '../utils/statistics';
 
 export function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [incomes, setIncomes] = useState<Income[]>([]);
   const [budget, setBudget] = useState<Budget | null>(null);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -25,9 +27,10 @@ export function ExpensesPage() {
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setLoading(true);
-      Promise.all([listExpenses(search), getActiveBudget()])
-        .then(([expenseData, budgetData]) => {
+      Promise.all([listExpenses(search), listIncomes(), getActiveBudget()])
+        .then(([expenseData, incomeData, budgetData]) => {
           setExpenses(expenseData);
+          setIncomes(incomeData);
           setBudget(budgetData);
         })
         .catch((err) => setError(err instanceof Error ? err.message : '지출내역을 불러오지 못했습니다.'))
@@ -37,7 +40,8 @@ export function ExpensesPage() {
   }, [search]);
 
   const totalExpense = useMemo(() => getTotalExpense(expenses), [expenses]);
-  const remainingBudget = (budget?.total_amount ?? 0) - totalExpense;
+  const totalIncome = useMemo(() => getTotalIncome(incomes), [incomes]);
+  const remainingBudget = (budget?.total_amount ?? 0) + totalIncome - totalExpense;
   const categorySummary = useMemo(() => getExpenseByCategory(expenses).filter((item) => item.amount > 0), [expenses]);
   const monthlySummary = useMemo(() => getMonthlyExpenses(expenses), [expenses]);
 
@@ -45,7 +49,7 @@ export function ExpensesPage() {
     <div className="page-shell">
       <PageHeader
         title="지출내역"
-        description="지원금 사용 내역과 예산 잔액을 관리합니다."
+        description="지원금 사용 내역과 남은 예산을 관리합니다."
         actions={
           <AdminOnly>
             <Link to="/expenses/new">
@@ -63,8 +67,9 @@ export function ExpensesPage() {
         <Loading />
       ) : (
         <>
-          <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard label="총 예산" value={formatCurrency(budget?.total_amount ?? 0)} />
+          <section className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+            <StatCard label="기본 예산" value={formatCurrency(budget?.total_amount ?? 0)} />
+            <StatCard label="총 수입" value={formatCurrency(totalIncome)} />
             <StatCard label="총 지출" value={formatCurrency(totalExpense)} />
             <StatCard label="남은 예산" value={formatCurrency(remainingBudget)} />
             <StatCard label="지출 건수" value={`${expenses.length}건`} />

@@ -39,6 +39,22 @@ export type Expense = {
   updated_at: string;
 };
 
+export type IncomeCategory = '지원금' | '후원금' | '환불' | '이월금' | '기타';
+
+export type Income = {
+  id: string;
+  received_on: string;
+  amount: number;
+  source: string;
+  purpose: string;
+  category: IncomeCategory;
+  document_url: string | null;
+  note: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Budget = {
   id: string;
   name: string;
@@ -53,4 +69,5 @@ export type Budget = {
 
 export type ActivityInput = Omit<Activity, 'id' | 'created_by' | 'created_at' | 'updated_at'>;
 export type ExpenseInput = Omit<Expense, 'id' | 'created_by' | 'created_at' | 'updated_at'>;
+export type IncomeInput = Omit<Income, 'id' | 'created_by' | 'created_at' | 'updated_at'>;
 export type BudgetInput = Pick<Budget, 'name' | 'total_amount' | 'starts_on' | 'ends_on' | 'is_active'>;

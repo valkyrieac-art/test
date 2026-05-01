@@ -1,8 +1,12 @@
-import type { Activity, Expense, ExpenseCategory } from '../types';
+import type { Activity, Expense, ExpenseCategory, Income, IncomeCategory } from '../types';
 import { monthKey } from './format';
 
 export function getTotalExpense(expenses: Expense[]) {
   return expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
+}
+
+export function getTotalIncome(incomes: Income[]) {
+  return incomes.reduce((sum, income) => sum + Number(income.amount || 0), 0);
 }
 
 export function getThisMonthActivities(activities: Activity[]) {
@@ -25,11 +29,36 @@ export function getExpenseByCategory(expenses: Expense[]) {
   return Object.entries(result).map(([name, amount]) => ({ name, amount }));
 }
 
+export function getIncomeByCategory(incomes: Income[]) {
+  const result: Record<IncomeCategory, number> = {
+    지원금: 0,
+    후원금: 0,
+    환불: 0,
+    이월금: 0,
+    기타: 0,
+  };
+  incomes.forEach((income) => {
+    result[income.category] += Number(income.amount || 0);
+  });
+  return Object.entries(result).map(([name, amount]) => ({ name, amount }));
+}
+
 export function getMonthlyExpenses(expenses: Expense[]) {
   const result = new Map<string, number>();
   expenses.forEach((expense) => {
     const key = monthKey(expense.spent_on);
     result.set(key, (result.get(key) ?? 0) + Number(expense.amount || 0));
+  });
+  return Array.from(result.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, amount]) => ({ month, amount }));
+}
+
+export function getMonthlyIncomes(incomes: Income[]) {
+  const result = new Map<string, number>();
+  incomes.forEach((income) => {
+    const key = monthKey(income.received_on);
+    result.set(key, (result.get(key) ?? 0) + Number(income.amount || 0));
   });
   return Array.from(result.entries())
     .sort(([a], [b]) => a.localeCompare(b))

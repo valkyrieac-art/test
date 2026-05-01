@@ -25,6 +25,7 @@ youth-future-plus/
 - 관리자만 활동내역/지출내역/예산 등록, 수정, 삭제 가능
 - 일반 사용자는 조회만 가능하며 등록/수정/삭제 버튼 숨김
 - 활동내역 CRUD, 검색, 날짜순 정렬, 사진 첨부
+- 수입내역 CRUD, 증빙 사진 첨부, 총 수입/분류별/월별 합계
 - 지출내역 CRUD, 영수증 첨부, 총 지출/남은 예산/분류별/월별 합계
 - 대시보드와 차트 기반 통계
 - 모바일 하단 탭, PC 좌측 메뉴 반응형 레이아웃
@@ -96,7 +97,7 @@ Supabase 프로젝트의 비밀번호 최소 길이 정책 때문에 4자리 비
 
 [supabase/schema.sql](./supabase/schema.sql)은 다음 RLS를 적용합니다.
 
-- 인증된 사용자는 `profiles`, `activities`, `expenses`, `budgets` 조회 가능
+- 인증된 사용자는 `profiles`, `activities`, `incomes`, `expenses`, `budgets` 조회 가능
 - `admin`만 `insert`, `update`, `delete` 가능
 - 사진/영수증 파일은 `attachments` Storage 버킷에 업로드
 - Storage 업로드, 수정, 삭제도 `admin`만 가능

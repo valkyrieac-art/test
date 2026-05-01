@@ -4,16 +4,14 @@ import { LogOut } from 'lucide-react';
 import { navItems } from './navItems';
 import { useAuth } from '../../contexts/auth';
 import { Button } from '../ui/Button';
+import { BrandMark } from './BrandMark';
 
 export function Sidebar() {
   const { profile, signOut } = useAuth();
 
   return (
     <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-slate-200 bg-white p-5 lg:flex lg:flex-col">
-      <div>
-        <p className="text-sm font-semibold text-brand-700">청소년미래플러스</p>
-        <h2 className="mt-1 text-xl font-bold text-slate-950">활동관리 시스템</h2>
-      </div>
+      <BrandMark />
       <nav className="mt-8 flex flex-1 flex-col gap-2">
         {navItems.map((item) => {
           const Icon = item.icon;

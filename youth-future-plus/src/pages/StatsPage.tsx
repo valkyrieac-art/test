@@ -17,23 +17,33 @@ import { Loading } from '../components/ui/Loading';
 import { PageHeader } from '../components/ui/PageHeader';
 import { listActivities } from '../services/activityService';
 import { listExpenses } from '../services/expenseService';
-import type { Activity, Expense } from '../types';
+import { listIncomes } from '../services/incomeService';
+import type { Activity, Expense, Income } from '../types';
 import { formatCurrency } from '../utils/format';
-import { getActivityByAttendee, getExpenseByCategory, getMonthlyActivities, getMonthlyExpenses } from '../utils/statistics';
+import {
+  getActivityByAttendee,
+  getExpenseByCategory,
+  getIncomeByCategory,
+  getMonthlyActivities,
+  getMonthlyExpenses,
+  getMonthlyIncomes,
+} from '../utils/statistics';
 
 const chartColors = ['#0ea5e9', '#10b981', '#f59e0b', '#6366f1', '#ef4444'];
 
 export function StatsPage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [incomes, setIncomes] = useState<Income[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    Promise.all([listActivities(), listExpenses()])
-      .then(([activityData, expenseData]) => {
+    Promise.all([listActivities(), listExpenses(), listIncomes()])
+      .then(([activityData, expenseData, incomeData]) => {
         setActivities(activityData);
         setExpenses(expenseData);
+        setIncomes(incomeData);
       })
       .catch((err) => setError(err instanceof Error ? err.message : '통계 정보를 불러오지 못했습니다.'))
       .finally(() => setLoading(false));
@@ -41,12 +51,14 @@ export function StatsPage() {
 
   const monthlyActivities = useMemo(() => getMonthlyActivities(activities), [activities]);
   const monthlyExpenses = useMemo(() => getMonthlyExpenses(expenses), [expenses]);
+  const monthlyIncomes = useMemo(() => getMonthlyIncomes(incomes), [incomes]);
   const categoryExpenses = useMemo(() => getExpenseByCategory(expenses).filter((item) => item.amount > 0), [expenses]);
+  const categoryIncomes = useMemo(() => getIncomeByCategory(incomes).filter((item) => item.amount > 0), [incomes]);
   const attendeeActivities = useMemo(() => getActivityByAttendee(activities), [activities]);
 
   return (
     <div className="page-shell">
-      <PageHeader title="통계" description="활동 참여와 지출 흐름을 월별, 분류별로 확인합니다." />
+      <PageHeader title="통계" description="활동 참여, 수입, 지출 흐름을 월별·분류별로 확인합니다." />
       {error ? <ErrorMessage message={error} /> : null}
       {loading ? (
         <Loading />
@@ -64,6 +76,18 @@ export function StatsPage() {
             </ResponsiveContainer>
           </ChartPanel>
 
+          <ChartPanel title="월별 수입금액">
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={monthlyIncomes}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis tickFormatter={(value) => `${Number(value) / 10000}만`} />
+                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                <Bar dataKey="amount" name="수입금액" fill="#10b981" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartPanel>
+
           <ChartPanel title="월별 지출금액">
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={monthlyExpenses}>
@@ -71,8 +95,22 @@ export function StatsPage() {
                 <XAxis dataKey="month" />
                 <YAxis tickFormatter={(value) => `${Number(value) / 10000}만`} />
                 <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-                <Bar dataKey="amount" name="지출금액" fill="#10b981" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="amount" name="지출금액" fill="#f59e0b" radius={[6, 6, 0, 0]} />
               </BarChart>
+            </ResponsiveContainer>
+          </ChartPanel>
+
+          <ChartPanel title="분류별 수입금액">
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie data={categoryIncomes} dataKey="amount" nameKey="name" outerRadius={92} label>
+                  {categoryIncomes.map((entry, index) => (
+                    <Cell key={entry.name} fill={chartColors[index % chartColors.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                <Legend />
+              </PieChart>
             </ResponsiveContainer>
           </ChartPanel>
 

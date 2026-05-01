@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, CircleDollarSign, ClipboardList, Wallet } from 'lucide-react';
+import { CalendarDays, CircleDollarSign, ClipboardList, HandCoins, Wallet } from 'lucide-react';
 import { AdminOnly } from '../components/AdminOnly';
 import { Button } from '../components/ui/Button';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -11,22 +11,25 @@ import { StatCard } from '../components/ui/StatCard';
 import { listActivities } from '../services/activityService';
 import { getActiveBudget } from '../services/budgetService';
 import { listExpenses } from '../services/expenseService';
-import type { Activity, Budget, Expense } from '../types';
+import { listIncomes } from '../services/incomeService';
+import type { Activity, Budget, Expense, Income } from '../types';
 import { compactText, formatCurrency, formatDate } from '../utils/format';
-import { getThisMonthActivities, getTotalExpense } from '../utils/statistics';
+import { getThisMonthActivities, getTotalExpense, getTotalIncome } from '../utils/statistics';
 
 export function DashboardPage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [incomes, setIncomes] = useState<Income[]>([]);
   const [budget, setBudget] = useState<Budget | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    Promise.all([listActivities(), listExpenses(), getActiveBudget()])
-      .then(([activityData, expenseData, budgetData]) => {
+    Promise.all([listActivities(), listExpenses(), listIncomes(), getActiveBudget()])
+      .then(([activityData, expenseData, incomeData, budgetData]) => {
         setActivities(activityData);
         setExpenses(expenseData);
+        setIncomes(incomeData);
         setBudget(budgetData);
       })
       .catch((err) => setError(err instanceof Error ? err.message : '대시보드 정보를 불러오지 못했습니다.'))
@@ -34,17 +37,21 @@ export function DashboardPage() {
   }, []);
 
   const totalExpense = useMemo(() => getTotalExpense(expenses), [expenses]);
-  const remainingBudget = (budget?.total_amount ?? 0) - totalExpense;
+  const totalIncome = useMemo(() => getTotalIncome(incomes), [incomes]);
+  const remainingBudget = (budget?.total_amount ?? 0) + totalIncome - totalExpense;
 
   return (
     <div className="page-shell">
       <PageHeader
         title="대시보드"
-        description="활동과 지원금 지출 현황을 한눈에 확인합니다."
+        description="활동, 수입, 지출, 남은 예산을 한눈에 확인합니다."
         actions={
           <AdminOnly>
             <Link to="/activities/new">
               <Button>활동 등록</Button>
+            </Link>
+            <Link to="/incomes/new">
+              <Button variant="secondary">수입 등록</Button>
             </Link>
             <Link to="/expenses/new">
               <Button variant="secondary">지출 등록</Button>
@@ -57,14 +64,15 @@ export function DashboardPage() {
         <Loading />
       ) : (
         <>
-          <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <section className="grid grid-cols-2 gap-3 lg:grid-cols-5">
             <StatCard label="전체 활동" value={`${activities.length}회`} icon={<ClipboardList size={20} />} />
             <StatCard label="이번 달 활동" value={`${getThisMonthActivities(activities)}회`} icon={<CalendarDays size={20} />} />
+            <StatCard label="전체 수입" value={formatCurrency(totalIncome)} icon={<HandCoins size={20} />} />
             <StatCard label="전체 지출" value={formatCurrency(totalExpense)} icon={<CircleDollarSign size={20} />} />
             <StatCard label="남은 예산" value={formatCurrency(remainingBudget)} icon={<Wallet size={20} />} />
           </section>
 
-          <section className="grid gap-4 lg:grid-cols-2">
+          <section className="grid gap-4 xl:grid-cols-3">
             <RecentPanel title="최근 활동내역" empty="등록된 활동이 없습니다.">
               {activities.slice(0, 5).map((activity) => (
                 <Link key={activity.id} to={`/activities/${activity.id}`} className="block rounded-lg border border-slate-100 p-4 hover:bg-slate-50">
@@ -74,6 +82,19 @@ export function DashboardPage() {
                   </div>
                   <p className="mt-1 text-sm text-slate-500">{activity.place}</p>
                   <p className="mt-2 text-sm text-slate-600">{compactText(activity.content)}</p>
+                </Link>
+              ))}
+            </RecentPanel>
+            <RecentPanel title="최근 수입내역" empty="등록된 수입이 없습니다.">
+              {incomes.slice(0, 5).map((income) => (
+                <Link key={income.id} to={`/incomes/${income.id}`} className="block rounded-lg border border-slate-100 p-4 hover:bg-slate-50">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-semibold text-slate-900">{income.purpose}</p>
+                    <span className="shrink-0 font-bold text-mint-600">{formatCurrency(income.amount)}</span>
+                  </div>
+                  <p className="mt-1 text-sm text-slate-500">
+                    {formatDate(income.received_on)} · {income.source} · {income.category}
+                  </p>
                 </Link>
               ))}
             </RecentPanel>
