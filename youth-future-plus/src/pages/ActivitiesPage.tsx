@@ -66,8 +66,8 @@ export function ActivitiesPage() {
                   <p className="text-sm font-semibold text-brand-700">{formatDate(activity.date)}</p>
                   <h2 className="mt-1 text-lg font-bold text-slate-950">{activity.title}</h2>
                 </div>
-                <span className="rounded-full bg-mint-50 px-3 py-1 text-xs font-bold text-mint-600">
-                  {activity.attendees.length}명
+                <span className="shrink-0 rounded-full bg-mint-50 px-3 py-1 text-xs font-bold text-mint-600">
+                  참여 {activity.attendees.length}명
                 </span>
               </div>
               <p className="mt-2 text-sm text-slate-500">{activity.place}</p>

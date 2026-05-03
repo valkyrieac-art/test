@@ -1,0 +1,2 @@
+export const INITIAL_ACTIVITY_BUDGET = 2500000;
+export const INITIAL_ACTIVITY_BUDGET_NAME = '최초 활동비';

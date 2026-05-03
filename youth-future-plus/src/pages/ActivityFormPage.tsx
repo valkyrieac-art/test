@@ -1,4 +1,5 @@
-import { FormEvent, useEffect, useState, type ReactNode } from 'react';
+import { FormEvent, KeyboardEvent, useEffect, useState, type ReactNode } from 'react';
+import { UserPlus, X } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/auth';
 import { Button } from '../components/ui/Button';
@@ -18,13 +19,14 @@ export function ActivityFormPage() {
   const isEdit = Boolean(id);
   const [form, setForm] = useState({
     date: today,
-    attendees: '',
     place: '',
     title: '',
     content: '',
     photo_url: '',
     note: '',
   });
+  const [participants, setParticipants] = useState<string[]>([]);
+  const [participantName, setParticipantName] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
@@ -33,17 +35,17 @@ export function ActivityFormPage() {
   useEffect(() => {
     if (!id) return;
     getActivity(id)
-      .then((activity) =>
+      .then((activity) => {
         setForm({
           date: activity.date,
-          attendees: activity.attendees.join(', '),
           place: activity.place,
           title: activity.title,
           content: activity.content,
           photo_url: activity.photo_url ?? '',
           note: activity.note ?? '',
-        }),
-      )
+        });
+        setParticipants(activity.attendees ?? []);
+      })
       .catch((err) => setError(err instanceof Error ? err.message : '활동내역을 불러오지 못했습니다.'))
       .finally(() => setLoading(false));
   }, [id]);
@@ -57,20 +59,41 @@ export function ActivityFormPage() {
     );
   }
 
+  function addParticipant() {
+    const name = participantName.trim().replace(/\s+/g, ' ');
+    if (!name) return;
+    setParticipants((current) => (current.some((item) => item === name) ? current : [...current, name]));
+    setParticipantName('');
+  }
+
+  function handleParticipantKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    addParticipant();
+  }
+
+  function removeParticipant(name: string) {
+    setParticipants((current) => current.filter((item) => item !== name));
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
     setError('');
     try {
+      const attendeeList = participants.map((name) => name.trim()).filter(Boolean);
+      if (attendeeList.length === 0) {
+        setError('참여인원을 1명 이상 등록하세요.');
+        setSaving(false);
+        return;
+      }
+
       let photoUrl = form.photo_url || null;
       if (file) photoUrl = await uploadAttachment(file, 'activities');
 
       const input: ActivityInput = {
         date: form.date,
-        attendees: form.attendees
-          .split(',')
-          .map((name) => name.trim())
-          .filter(Boolean),
+        attendees: attendeeList,
         place: form.place,
         title: form.title,
         content: form.content,
@@ -97,14 +120,41 @@ export function ActivityFormPage() {
           <FormField label="날짜">
             <input className="field-input" type="date" value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value })} required />
           </FormField>
-          <FormField label="참석자">
-            <input
-              className="field-input"
-              value={form.attendees}
-              onChange={(event) => setForm({ ...form, attendees: event.target.value })}
-              placeholder="예: 김민준, 이서연, 박지호"
-              required
-            />
+          <FormField label="참여인원">
+            <div className="flex gap-2">
+              <input
+                className="field-input min-w-0 flex-1"
+                value={participantName}
+                onChange={(event) => setParticipantName(event.target.value)}
+                onKeyDown={handleParticipantKeyDown}
+                placeholder="이름 입력 후 추가"
+              />
+              <Button type="button" variant="secondary" onClick={addParticipant}>
+                <UserPlus size={18} />
+                추가
+              </Button>
+            </div>
+            <div className="flex flex-col gap-1 text-xs font-bold text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+              <span>등록된 참여인원 {participants.length}명</span>
+              <span>중복 이름은 한 번만 저장됩니다.</span>
+            </div>
+            {participants.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {participants.map((name) => (
+                  <span key={name} className="inline-flex items-center gap-1 rounded-full bg-mint-50 px-3 py-1 text-sm font-bold text-mint-700">
+                    {name}
+                    <button
+                      type="button"
+                      className="rounded-full p-0.5 text-mint-700 hover:bg-mint-100"
+                      onClick={() => removeParticipant(name)}
+                      aria-label={`${name} 삭제`}
+                    >
+                      <X size={14} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            ) : null}
           </FormField>
           <FormField label="장소">
             <input className="field-input" value={form.place} onChange={(event) => setForm({ ...form, place: event.target.value })} required />
@@ -142,9 +192,9 @@ export function ActivityFormPage() {
 
 function FormField({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <label className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       <span className="field-label">{label}</span>
       {children}
-    </label>
+    </div>
   );
 }

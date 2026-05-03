@@ -9,17 +9,14 @@ import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { Loading } from '../components/ui/Loading';
 import { PageHeader } from '../components/ui/PageHeader';
 import { StatCard } from '../components/ui/StatCard';
-import { getActiveBudget } from '../services/budgetService';
+import { INITIAL_ACTIVITY_BUDGET } from '../config/budget';
 import { listExpenses } from '../services/expenseService';
-import { listIncomes } from '../services/incomeService';
-import type { Budget, Expense, Income } from '../types';
+import type { Expense } from '../types';
 import { formatCurrency, formatDate } from '../utils/format';
-import { getExpenseByCategory, getMonthlyExpenses, getTotalExpense, getTotalIncome } from '../utils/statistics';
+import { getExpenseByCategory, getMonthlyExpenses, getTotalExpense } from '../utils/statistics';
 
 export function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [incomes, setIncomes] = useState<Income[]>([]);
-  const [budget, setBudget] = useState<Budget | null>(null);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -27,12 +24,8 @@ export function ExpensesPage() {
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setLoading(true);
-      Promise.all([listExpenses(search), listIncomes(), getActiveBudget()])
-        .then(([expenseData, incomeData, budgetData]) => {
-          setExpenses(expenseData);
-          setIncomes(incomeData);
-          setBudget(budgetData);
-        })
+      listExpenses(search)
+        .then(setExpenses)
         .catch((err) => setError(err instanceof Error ? err.message : '지출내역을 불러오지 못했습니다.'))
         .finally(() => setLoading(false));
     }, 180);
@@ -40,8 +33,7 @@ export function ExpensesPage() {
   }, [search]);
 
   const totalExpense = useMemo(() => getTotalExpense(expenses), [expenses]);
-  const totalIncome = useMemo(() => getTotalIncome(incomes), [incomes]);
-  const remainingBudget = (budget?.total_amount ?? 0) + totalIncome - totalExpense;
+  const remainingBudget = INITIAL_ACTIVITY_BUDGET - totalExpense;
   const categorySummary = useMemo(() => getExpenseByCategory(expenses).filter((item) => item.amount > 0), [expenses]);
   const monthlySummary = useMemo(() => getMonthlyExpenses(expenses), [expenses]);
 
@@ -49,7 +41,7 @@ export function ExpensesPage() {
     <div className="page-shell">
       <PageHeader
         title="지출내역"
-        description="지원금 사용 내역과 남은 예산을 관리합니다."
+        description="최초 활동비 2,500,000원 안에서 지출만 등록하고 관리합니다."
         actions={
           <AdminOnly>
             <Link to="/expenses/new">
@@ -67,12 +59,10 @@ export function ExpensesPage() {
         <Loading />
       ) : (
         <>
-          <section className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-            <StatCard label="기본 예산" value={formatCurrency(budget?.total_amount ?? 0)} />
-            <StatCard label="총 수입" value={formatCurrency(totalIncome)} />
+          <section className="grid grid-cols-2 gap-3 md:grid-cols-3">
+            <StatCard className="col-span-2 md:col-span-1" label="활동비 예산" value={formatCurrency(INITIAL_ACTIVITY_BUDGET)} />
             <StatCard label="총 지출" value={formatCurrency(totalExpense)} />
             <StatCard label="남은 예산" value={formatCurrency(remainingBudget)} />
-            <StatCard label="지출 건수" value={`${expenses.length}건`} />
           </section>
 
           <section className="grid gap-3 lg:grid-cols-2">

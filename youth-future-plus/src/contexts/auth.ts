@@ -6,10 +6,12 @@ export type AuthContextValue = {
   session: Session | null;
   user: User | null;
   profile: Profile | null;
+  loginId: string | null;
   loading: boolean;
   isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  changePassword: (password: string) => Promise<void>;
   refreshProfile: () => Promise<void>;
 };
 

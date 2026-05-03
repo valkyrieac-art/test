@@ -9,9 +9,6 @@ import { ActivityFormPage } from './pages/ActivityFormPage';
 import { ExpensesPage } from './pages/ExpensesPage';
 import { ExpenseDetailPage } from './pages/ExpenseDetailPage';
 import { ExpenseFormPage } from './pages/ExpenseFormPage';
-import { IncomesPage } from './pages/IncomesPage';
-import { IncomeDetailPage } from './pages/IncomeDetailPage';
-import { IncomeFormPage } from './pages/IncomeFormPage';
 import { StatsPage } from './pages/StatsPage';
 import { SettingsPage } from './pages/SettingsPage';
 
@@ -30,10 +27,6 @@ export default function App() {
           <Route path="/expenses/new" element={<ExpenseFormPage />} />
           <Route path="/expenses/:id" element={<ExpenseDetailPage />} />
           <Route path="/expenses/:id/edit" element={<ExpenseFormPage />} />
-          <Route path="/incomes" element={<IncomesPage />} />
-          <Route path="/incomes/new" element={<IncomeFormPage />} />
-          <Route path="/incomes/:id" element={<IncomeDetailPage />} />
-          <Route path="/incomes/:id/edit" element={<IncomeFormPage />} />
           <Route path="/stats" element={<StatsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>

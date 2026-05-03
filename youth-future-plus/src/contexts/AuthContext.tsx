@@ -3,7 +3,7 @@ import type { Session, User } from '@supabase/supabase-js';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import type { Profile } from '../types';
 import { AuthContext, type AuthContextValue } from './auth';
-import { getDemoAccount, resolveLoginEmail } from '../config/accounts';
+import { getDemoAccount, resolveLoginEmail, updateOwnPassword } from '../config/accounts';
 
 const DEMO_SESSION_KEY = 'yfp-demo-session';
 
@@ -132,18 +132,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(null);
   }, []);
 
+  const loginId = useMemo(() => {
+    const email = profile?.email ?? session?.user?.email ?? null;
+    return email ? email.split('@')[0] : null;
+  }, [profile?.email, session?.user?.email]);
+
+  const changePassword = useCallback(
+    async (password: string) => {
+      if (!isSupabaseConfigured) {
+        if (!loginId) throw new Error('로그인 계정을 찾을 수 없습니다.');
+        updateOwnPassword(loginId, password);
+        return;
+      }
+
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw error;
+    },
+    [loginId],
+  );
+
   const value = useMemo<AuthContextValue>(
     () => ({
       session,
       user: session?.user ?? null,
       profile,
+      loginId,
       loading,
       isAdmin: profile?.role === 'admin',
       signIn,
       signOut,
+      changePassword,
       refreshProfile,
     }),
-    [loading, profile, refreshProfile, session, signIn, signOut],
+    [changePassword, loading, loginId, profile, refreshProfile, session, signIn, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

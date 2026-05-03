@@ -7,11 +7,17 @@ import { Button } from '../ui/Button';
 import { BrandMark } from './BrandMark';
 
 export function Sidebar() {
-  const { profile, signOut } = useAuth();
+  const { profile, loginId, signOut } = useAuth();
+  const isAdmin = profile?.role === 'admin';
 
   return (
     <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-slate-200 bg-white p-5 lg:flex lg:flex-col">
       <BrandMark />
+      {!isAdmin ? (
+        <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-sm font-bold text-slate-700">
+          {profile?.full_name ?? '참여자'} ({loginId ?? '-'})
+        </p>
+      ) : null}
       <nav className="mt-8 flex flex-1 flex-col gap-2">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -34,9 +40,9 @@ export function Sidebar() {
       </nav>
       <div className="rounded-lg bg-slate-50 p-4">
         <p className="text-sm font-semibold text-slate-900">{profile?.full_name ?? '사용자'}</p>
-        <p className="mt-1 break-all text-xs text-slate-500">{profile?.email}</p>
+        <p className="mt-1 break-all text-xs text-slate-500">{loginId ?? profile?.email}</p>
         <p className="mt-2 inline-flex rounded-full bg-mint-100 px-2 py-1 text-xs font-bold text-mint-600">
-          {profile?.role === 'admin' ? '관리자' : '조회 사용자'}
+          {isAdmin ? '관리자' : '참여자'}
         </p>
         <Button variant="secondary" className="mt-4 w-full" onClick={signOut}>
           <LogOut size={18} />

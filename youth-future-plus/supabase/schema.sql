@@ -1,4 +1,4 @@
--- 청소년미래플러스 활동관리 시스템
+-- 청소년미래도전프로젝트 활동관리 시스템
 -- Supabase SQL Editor에서 전체 실행하세요.
 
 create extension if not exists pgcrypto;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Pencil, Trash2 } from 'lucide-react';
+import { ChevronDown, Pencil, Trash2, Users } from 'lucide-react';
 import { AdminOnly } from '../components/AdminOnly';
 import { Button } from '../components/ui/Button';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
@@ -17,6 +17,7 @@ export function ActivityDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [deleting, setDeleting] = useState(false);
+  const [showParticipants, setShowParticipants] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -69,11 +70,34 @@ export function ActivityDetailPage() {
           ) : null}
           <div className="space-y-5 p-5">
             <div>
-              <p className="text-sm font-bold text-brand-700">{formatDate(activity.date)}</p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-bold text-brand-700">{formatDate(activity.date)}</p>
+                <button
+                  type="button"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-full bg-mint-50 px-3 py-1 text-xs font-black text-mint-700 transition hover:bg-mint-100"
+                  onClick={() => setShowParticipants((value) => !value)}
+                  aria-expanded={showParticipants}
+                >
+                  <Users size={14} />
+                  참여 {activity.attendees.length}명
+                  <ChevronDown className={showParticipants ? 'rotate-180 transition' : 'transition'} size={14} />
+                </button>
+              </div>
               <h1 className="mt-2 text-2xl font-bold text-slate-950">{activity.title}</h1>
             </div>
+            {showParticipants ? (
+              <div className="rounded-lg border border-mint-100 bg-mint-50 p-4">
+                <p className="text-xs font-black uppercase text-mint-700">참여인원 명단</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {activity.attendees.map((name, index) => (
+                    <span key={`${name}-${index}`} className="rounded-full bg-white px-3 py-1 text-sm font-bold text-slate-800 shadow-sm">
+                      {name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
             <InfoRow label="장소" value={activity.place} />
-            <InfoRow label="참석자" value={activity.attendees.join(', ')} />
             <div>
               <p className="field-label">회의/활동 내용</p>
               <p className="mt-2 whitespace-pre-wrap rounded-lg bg-slate-50 p-4 leading-7 text-slate-700">{activity.content}</p>

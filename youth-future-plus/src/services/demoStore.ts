@@ -1,4 +1,5 @@
 import type { Activity, ActivityInput, Budget, BudgetInput, Expense, ExpenseInput, Income, IncomeInput } from '../types';
+import { INITIAL_ACTIVITY_BUDGET, INITIAL_ACTIVITY_BUDGET_NAME } from '../config/budget';
 
 const ACTIVITY_KEY = 'yfp-demo-activities';
 const EXPENSE_KEY = 'yfp-demo-expenses';
@@ -34,7 +35,7 @@ const seedActivities: Activity[] = [
     date: '2026-03-15',
     attendees: ['사용자1', '사용자2'],
     place: '금천중학교',
-    title: '청소년미래플러스 첫 회의',
+    title: '청소년미래도전프로젝트 첫 회의',
     content: '1년 활동 목표와 역할을 정하고 지원금 사용 원칙을 확인했습니다.',
     photo_url: null,
     note: '데모 데이터입니다.',
@@ -91,7 +92,7 @@ const seedIncomes: Income[] = [
     id: 'demo-income-1',
     received_on: '2026-03-01',
     amount: 300000,
-    source: '청소년미래플러스 지원사업',
+    source: '청소년미래도전프로젝트 지원사업',
     purpose: '1차 활동 지원금 입금',
     category: '지원금',
     document_url: null,
@@ -118,8 +119,8 @@ const seedIncomes: Income[] = [
 const seedBudgets: Budget[] = [
   {
     id: 'demo-budget-1',
-    name: '2026 청소년미래플러스 지원금',
-    total_amount: 1000000,
+    name: INITIAL_ACTIVITY_BUDGET_NAME,
+    total_amount: INITIAL_ACTIVITY_BUDGET,
     starts_on: '2026-03-01',
     ends_on: '2027-02-28',
     is_active: true,
@@ -242,13 +243,12 @@ export const demoStore = {
   },
 
   listBudgets() {
-    return read<Budget[]>(BUDGET_KEY, seedBudgets).sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-    );
+    write(BUDGET_KEY, seedBudgets);
+    return seedBudgets;
   },
 
   getActiveBudget() {
-    return demoStore.listBudgets().find((budget) => budget.is_active) ?? null;
+    return seedBudgets[0];
   },
 
   createBudget(input: BudgetInput) {

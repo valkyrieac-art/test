@@ -47,7 +47,6 @@ export function LoginPage() {
               autoComplete="username"
               value={loginId}
               onChange={(event) => setLoginId(event.target.value)}
-              placeholder="admin, test1, test2"
               required
             />
           </label>
@@ -67,9 +66,6 @@ export function LoginPage() {
             {loading ? '로그인 중...' : '로그인'}
           </Button>
         </form>
-        <p className="mt-5 rounded-lg bg-slate-50 p-3 text-sm leading-6 text-slate-600">
-          테스트 계정: 관리자 admin / 1234, 사용자 test1 / test1, 사용자 test2 / test2
-        </p>
       </section>
     </main>
   );
